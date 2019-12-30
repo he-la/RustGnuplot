@@ -67,8 +67,13 @@ pub enum PlotOption<T>
 	/// Sets the size of the arrowhead. This is specified in the units of graph (i.e. `1.0` would make the arrow as big as the graph).
 	ArrowSize(f64),
 	/// Width of the whisker bars (as a fraction of the box width) for box and whisker plots.
-	WhiskerBars(f64),
+  WhiskerBars(f64),
+  /// Y Axis on which to draw the plot
+  YAxis(YAxis)
 }
+
+#[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Copy)]
+pub enum YAxis {One, Two}
 
 impl<'l> OneWayOwned for PlotOption<&'l str>
 {
@@ -89,7 +94,8 @@ impl<'l> OneWayOwned for PlotOption<&'l str>
 			ArrowType(v) => ArrowType(v),
 			ArrowSize(v) => ArrowSize(v),
 			WhiskerBars(v) => WhiskerBars(v),
-			FillPattern(v) => FillPattern(v),
+		  FillPattern(v) => FillPattern(v),
+      YAxis(v) => YAxis(v),
 		}
 	}
 }
