@@ -18,253 +18,253 @@ use std::io::Write;
 
 pub struct PlotElement
 {
-	  data: Vec<f64>,
-	  num_rows: usize,
-	  num_cols: usize,
-	  plot_type: PlotType,
-	  source_type: DataSourceType,
-	  is_3d: bool,
-	  options: Vec<PlotOption<String>>,
+	data: Vec<f64>,
+	num_rows: usize,
+	num_cols: usize,
+	plot_type: PlotType,
+	source_type: DataSourceType,
+	is_3d: bool,
+	options: Vec<PlotOption<String>>,
 }
 
 impl PlotElement
 {
-	  pub fn new_plot2<T1, X1, T2, X2>(
-		    plot_type: PlotType, x1: X1, x2: X2, options: Vec<PlotOption<String>>,
-	  ) -> PlotElement
-	  where
-		    T1: DataType,
-		    X1: IntoIterator<Item = T1>,
-		    T2: DataType,
-		    X2: IntoIterator<Item = T2>,
-	  {
-		    let mut num_rows = 0;
-		    let mut data = vec![];
-		    // TODO: Reserve.
-		    for (x1, x2) in x1.into_iter().zip(x2.into_iter())
-		    {
-			      data.push(x1.get());
-			      data.push(x2.get());
-			      num_rows += 1;
-		    }
+	pub fn new_plot2<T1, X1, T2, X2>(
+		plot_type: PlotType, x1: X1, x2: X2, options: Vec<PlotOption<String>>,
+	) -> PlotElement
+	where
+		T1: DataType,
+		X1: IntoIterator<Item = T1>,
+		T2: DataType,
+		X2: IntoIterator<Item = T2>,
+	{
+		let mut num_rows = 0;
+		let mut data = vec![];
+		// TODO: Reserve.
+		for (x1, x2) in x1.into_iter().zip(x2.into_iter())
+		{
+			data.push(x1.get());
+			data.push(x2.get());
+			num_rows += 1;
+		}
 
-		    PlotElement {
-			      data: data,
-			      num_rows: num_rows,
-			      num_cols: 2,
-			      plot_type: plot_type,
-			      source_type: Record,
-			      is_3d: false,
-			      options: options,
-		    }
-	  }
+		PlotElement {
+			data: data,
+			num_rows: num_rows,
+			num_cols: 2,
+			plot_type: plot_type,
+			source_type: Record,
+			is_3d: false,
+			options: options,
+		}
+	}
 
-	  pub fn new_plot3<T1, X1, T2, X2, T3, X3>(
-		    plot_type: PlotType, x1: X1, x2: X2, x3: X3, options: Vec<PlotOption<String>>,
-	  ) -> PlotElement
-	  where
-		    T1: DataType,
-		    X1: IntoIterator<Item = T1>,
-		    T2: DataType,
-		    X2: IntoIterator<Item = T2>,
-		    T3: DataType,
-		    X3: IntoIterator<Item = T3>,
-	  {
-		    let mut num_rows = 0;
-		    let mut data = vec![];
-		    // TODO: Reserve.
-		    for ((x1, x2), x3) in x1.into_iter().zip(x2.into_iter()).zip(x3.into_iter())
-		    {
-			      data.push(x1.get());
-			      data.push(x2.get());
-			      data.push(x3.get());
-			      num_rows += 1;
-		    }
+	pub fn new_plot3<T1, X1, T2, X2, T3, X3>(
+		plot_type: PlotType, x1: X1, x2: X2, x3: X3, options: Vec<PlotOption<String>>,
+	) -> PlotElement
+	where
+		T1: DataType,
+		X1: IntoIterator<Item = T1>,
+		T2: DataType,
+		X2: IntoIterator<Item = T2>,
+		T3: DataType,
+		X3: IntoIterator<Item = T3>,
+	{
+		let mut num_rows = 0;
+		let mut data = vec![];
+		// TODO: Reserve.
+		for ((x1, x2), x3) in x1.into_iter().zip(x2.into_iter()).zip(x3.into_iter())
+		{
+			data.push(x1.get());
+			data.push(x2.get());
+			data.push(x3.get());
+			num_rows += 1;
+		}
 
-		    PlotElement {
-			      data: data,
-			      num_rows: num_rows,
-			      num_cols: 3,
-			      plot_type: plot_type,
-			      source_type: Record,
-			      is_3d: false,
-			      options: options,
-		    }
-	  }
+		PlotElement {
+			data: data,
+			num_rows: num_rows,
+			num_cols: 3,
+			plot_type: plot_type,
+			source_type: Record,
+			is_3d: false,
+			options: options,
+		}
+	}
 
-	  pub fn new_plot5<T1, X1, T2, X2, T3, X3, T4, X4, T5, X5>(
-		    plot_type: PlotType, x1: X1, x2: X2, x3: X3, x4: X4, x5: X5,
-		    options: Vec<PlotOption<String>>,
-	  ) -> PlotElement
-	  where
-		    T1: DataType,
-		    X1: IntoIterator<Item = T1>,
-		    T2: DataType,
-		    X2: IntoIterator<Item = T2>,
-		    T3: DataType,
-		    X3: IntoIterator<Item = T3>,
-		    T4: DataType,
-		    X4: IntoIterator<Item = T4>,
-		    T5: DataType,
-		    X5: IntoIterator<Item = T5>,
-	  {
-		    let mut num_rows = 0;
-		    let mut data = vec![];
-		    // TODO: Reserve.
-		    for ((((x1, x2), x3), x4), x5) in x1
-			      .into_iter()
-			      .zip(x2.into_iter())
-			      .zip(x3.into_iter())
-			      .zip(x4.into_iter())
-			      .zip(x5.into_iter())
-		    {
-			      data.push(x1.get());
-			      data.push(x2.get());
-			      data.push(x3.get());
-			      data.push(x4.get());
-			      data.push(x5.get());
-			      num_rows += 1;
-		    }
+	pub fn new_plot5<T1, X1, T2, X2, T3, X3, T4, X4, T5, X5>(
+		plot_type: PlotType, x1: X1, x2: X2, x3: X3, x4: X4, x5: X5,
+		options: Vec<PlotOption<String>>,
+	) -> PlotElement
+	where
+		T1: DataType,
+		X1: IntoIterator<Item = T1>,
+		T2: DataType,
+		X2: IntoIterator<Item = T2>,
+		T3: DataType,
+		X3: IntoIterator<Item = T3>,
+		T4: DataType,
+		X4: IntoIterator<Item = T4>,
+		T5: DataType,
+		X5: IntoIterator<Item = T5>,
+	{
+		let mut num_rows = 0;
+		let mut data = vec![];
+		// TODO: Reserve.
+		for ((((x1, x2), x3), x4), x5) in x1
+			.into_iter()
+			.zip(x2.into_iter())
+			.zip(x3.into_iter())
+			.zip(x4.into_iter())
+			.zip(x5.into_iter())
+		{
+			data.push(x1.get());
+			data.push(x2.get());
+			data.push(x3.get());
+			data.push(x4.get());
+			data.push(x5.get());
+			num_rows += 1;
+		}
 
-		    PlotElement {
-			      data: data,
-			      num_rows: num_rows,
-			      num_cols: 5,
-			      plot_type: plot_type,
-			      source_type: Record,
-			      is_3d: false,
-			      options: options,
-		    }
-	  }
+		PlotElement {
+			data: data,
+			num_rows: num_rows,
+			num_cols: 5,
+			plot_type: plot_type,
+			source_type: Record,
+			is_3d: false,
+			options: options,
+		}
+	}
 
-	  pub fn new_plot6<T1, X1, T2, X2, T3, X3, T4, X4, T5, X5, T6, X6>(
-		    plot_type: PlotType, x1: X1, x2: X2, x3: X3, x4: X4, x5: X5, x6: X6,
-		    options: Vec<PlotOption<String>>,
-	  ) -> PlotElement
-	  where
-		    T1: DataType,
-		    X1: IntoIterator<Item = T1>,
-		    T2: DataType,
-		    X2: IntoIterator<Item = T2>,
-		    T3: DataType,
-		    X3: IntoIterator<Item = T3>,
-		    T4: DataType,
-		    X4: IntoIterator<Item = T4>,
-		    T5: DataType,
-		    X5: IntoIterator<Item = T5>,
-		    T6: DataType,
-		    X6: IntoIterator<Item = T6>,
-	  {
-		    let mut num_rows = 0;
-		    let mut data = vec![];
-		    // TODO: Reserve.
-		    for (((((x1, x2), x3), x4), x5), x6) in x1
-			      .into_iter()
-			      .zip(x2.into_iter())
-			      .zip(x3.into_iter())
-			      .zip(x4.into_iter())
-			      .zip(x5.into_iter())
-			      .zip(x6.into_iter())
-		    {
-			      data.push(x1.get());
-			      data.push(x2.get());
-			      data.push(x3.get());
-			      data.push(x4.get());
-			      data.push(x5.get());
-			      data.push(x6.get());
-			      num_rows += 1;
-		    }
+	pub fn new_plot6<T1, X1, T2, X2, T3, X3, T4, X4, T5, X5, T6, X6>(
+		plot_type: PlotType, x1: X1, x2: X2, x3: X3, x4: X4, x5: X5, x6: X6,
+		options: Vec<PlotOption<String>>,
+	) -> PlotElement
+	where
+		T1: DataType,
+		X1: IntoIterator<Item = T1>,
+		T2: DataType,
+		X2: IntoIterator<Item = T2>,
+		T3: DataType,
+		X3: IntoIterator<Item = T3>,
+		T4: DataType,
+		X4: IntoIterator<Item = T4>,
+		T5: DataType,
+		X5: IntoIterator<Item = T5>,
+		T6: DataType,
+		X6: IntoIterator<Item = T6>,
+	{
+		let mut num_rows = 0;
+		let mut data = vec![];
+		// TODO: Reserve.
+		for (((((x1, x2), x3), x4), x5), x6) in x1
+			.into_iter()
+			.zip(x2.into_iter())
+			.zip(x3.into_iter())
+			.zip(x4.into_iter())
+			.zip(x5.into_iter())
+			.zip(x6.into_iter())
+		{
+			data.push(x1.get());
+			data.push(x2.get());
+			data.push(x3.get());
+			data.push(x4.get());
+			data.push(x5.get());
+			data.push(x6.get());
+			num_rows += 1;
+		}
 
-		    PlotElement {
-			      data: data,
-			      num_rows: num_rows,
-			      num_cols: 6,
-			      plot_type: plot_type,
-			      source_type: Record,
-			      is_3d: false,
-			      options: options,
-		    }
-	  }
+		PlotElement {
+			data: data,
+			num_rows: num_rows,
+			num_cols: 6,
+			plot_type: plot_type,
+			source_type: Record,
+			is_3d: false,
+			options: options,
+		}
+	}
 
-	  pub fn new_plot_matrix<T: DataType, X: IntoIterator<Item = T>>(
-		    plot_type: PlotType, is_3d: bool, mat: X, num_rows: usize, num_cols: usize,
-		    dimensions: Option<(f64, f64, f64, f64)>, options: Vec<PlotOption<String>>,
-	  ) -> PlotElement
-	  {
-		    let mut count = 0;
-		    let mut data = vec![];
-		    // TODO: Reserve.
-		    for x in mat
-		    {
-			      data.push(x.get());
-			      count += 1;
-		    }
+	pub fn new_plot_matrix<T: DataType, X: IntoIterator<Item = T>>(
+		plot_type: PlotType, is_3d: bool, mat: X, num_rows: usize, num_cols: usize,
+		dimensions: Option<(f64, f64, f64, f64)>, options: Vec<PlotOption<String>>,
+	) -> PlotElement
+	{
+		let mut count = 0;
+		let mut data = vec![];
+		// TODO: Reserve.
+		for x in mat
+		{
+			data.push(x.get());
+			count += 1;
+		}
 
-		    if count < num_rows * num_cols
-		    {
-			      for _ in 0..num_rows * num_cols - count
-			      {
-				        use std::f64;
-				        data.push(f64::NAN);
-			      }
-		    }
+		if count < num_rows * num_cols
+		{
+			for _ in 0..num_rows * num_cols - count
+			{
+				use std::f64;
+				data.push(f64::NAN);
+			}
+		}
 
-		    let source_type = match dimensions
-		    {
-			      Some((x1, y1, x2, y2)) => SizedArray(x1, y1, x2, y2),
-			      None => Array,
-		    };
+		let source_type = match dimensions
+		{
+			Some((x1, y1, x2, y2)) => SizedArray(x1, y1, x2, y2),
+			None => Array,
+		};
 
-		    PlotElement {
-			      data: data,
-			      num_rows: num_rows,
-			      num_cols: num_cols,
-			      plot_type: plot_type,
-			      source_type: source_type,
-			      is_3d: is_3d,
-			      options: options,
-		    }
-	  }
+		PlotElement {
+			data: data,
+			num_rows: num_rows,
+			num_cols: num_cols,
+			plot_type: plot_type,
+			source_type: source_type,
+			is_3d: is_3d,
+			options: options,
+		}
+	}
 
-	  fn write_args(&self, writer: &mut dyn Writer, version: GnuplotVersion)
-	  {
-		    let options = &self.options;
-		    match self.source_type
-		    {
-			      Record =>
-			      {
-				        write!(
-					          writer,
-					          r#" "-" binary endian=little record={} format="%float64" using "#,
-					          self.num_rows
-				        );
+	fn write_args(&self, writer: &mut dyn Writer, version: GnuplotVersion)
+	{
+		let options = &self.options;
+		match self.source_type
+		{
+			Record =>
+			{
+				write!(
+					writer,
+					r#" "-" binary endian=little record={} format="%float64" using "#,
+					self.num_rows
+				);
 
-				        let mut col_idx = 1;
-				        while col_idx < self.num_cols + 1
-				        {
-					          write!(writer, "{}", col_idx);
-					          if col_idx < self.num_cols
-					          {
-						            writer.write_str(":");
-					          }
-					          col_idx += 1;
-				        }
-			      }
-			      _ =>
-			      {
-				        write!(
-					          writer,
-					          r#" "-" binary endian=little array=({},{}) format="%float64" "#,
-					          self.num_cols, self.num_rows
-				        );
+				let mut col_idx = 1;
+				while col_idx < self.num_cols + 1
+				{
+					write!(writer, "{}", col_idx);
+					if col_idx < self.num_cols
+					{
+						writer.write_str(":");
+					}
+					col_idx += 1;
+				}
+			}
+			_ =>
+			{
+				write!(
+					writer,
+					r#" "-" binary endian=little array=({},{}) format="%float64" "#,
+					self.num_cols, self.num_rows
+				);
 
-				        match self.source_type
-				        {
-					          SizedArray(x1, y1, x2, y2) =>
-					          {
-						            let (x1, x2) = if x1 > x2 { (x2, x1) } else { (x1, x2) };
+				match self.source_type
+				{
+					SizedArray(x1, y1, x2, y2) =>
+					{
+						let (x1, x2) = if x1 > x2 { (x2, x1) } else { (x1, x2) };
 
-						            let (y1, y2) = if y1 > y2 { (y2, y1) } else { (y1, y2) };
+						let (y1, y2) = if y1 > y2 { (y2, y1) } else { (y1, y2) };
 						write!(writer, "origin=({:.12e},{:.12e}", x1, y1);
 						if self.is_3d
 						{
@@ -1123,15 +1123,15 @@ impl AxesCommonData
 			c.write_str("1");
 		}
 
-    //FIXME: fix this horrible mess and instead do it properly, allowing to change x axis as well
-    first_opt! {options,
-                YAxis(y) => {
-                    write!(c, " axes {}", match y {
-                        YAxis::One => "x1y1",
-                        YAxis::Two => "x1y2"
-                    });
-                }
-    }
+		//FIXME: fix this horrible mess and instead do it properly, allowing to change x axis as well
+		first_opt! {options,
+					YAxis(y) => {
+						write!(c, " axes {}", match y {
+							YAxis::One => "x1y1",
+							YAxis::Two => "x1y2"
+						});
+					}
+		}
 
 		if version.major >= 5
 		{
@@ -1344,7 +1344,6 @@ pub trait AxesCommon: AxesCommonPrivate
 			.set_label_common(YLabel, text, options);
 		self
 	}
-
 
 	/// Like `set_x_label`, but for the Y2 axis
 	fn set_y2_label<'l>(&'l mut self, text: &str, options: &[LabelOption<&str>]) -> &'l mut Self

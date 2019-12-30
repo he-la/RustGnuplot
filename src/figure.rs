@@ -89,7 +89,11 @@ impl<'f> EvcxrFigure<'f>
 			"EVCXR_BEGIN_CONTENT {}",
 			match self.mime_type
 			{
-				PNG => /*"image/png"*/ unimplemented!(), // TODO: base64-encode the output
+				PNG =>
+				{
+					/*"image/png"*/
+					unimplemented!() // TODO: base64-encode the output
+				}
 				HTML => "text/html",
 				SVG => "image/svg+xml",
 			}
@@ -144,10 +148,13 @@ impl<'f> std::fmt::Debug for EvcxrFigure<'f>
 {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result
 	{
-		write!(f, "figure.as_evcxr(...) is broken; you must use
+		write!(
+			f,
+			"figure.as_evcxr(...) is broken; you must use
     let mut fig = fig.as_evxr(...);
     fig
-instead.");
+instead."
+		);
 		Ok(())
 	}
 }
@@ -447,7 +454,9 @@ impl Figure
 
 	/// Generate struct displayable by
 	/// [evcxr_jupyter](https://github.com/google/evcxr/blob/master/evcxr_jupyter/README.md)
-	pub fn as_evcxr(&mut self, mime_type: EvcxrMimeType, width_px: u32, height_px: u32) -> EvcxrFigure
+	pub fn as_evcxr(
+		&mut self, mime_type: EvcxrMimeType, width_px: u32, height_px: u32,
+	) -> EvcxrFigure
 	{
 		EvcxrFigure {
 			mime_type,
@@ -457,10 +466,11 @@ impl Figure
 		}
 	}
 
-    /// Direct way to display through evcxr using default parameters
-    pub fn evcxr_display(&mut self) {
-        self.as_evcxr(EvcxrMimeType::SVG, 800, 400).evcxr_display();
-    }
+	/// Direct way to display through evcxr using default parameters
+	pub fn evcxr_display(&mut self)
+	{
+		self.as_evcxr(EvcxrMimeType::SVG, 800, 400).evcxr_display();
+	}
 
 	/// Closes the gnuplot process.
 	///
