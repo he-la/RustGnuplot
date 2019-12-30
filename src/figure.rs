@@ -13,7 +13,7 @@ use crate::options::GnuplotVersion;
 use crate::writer::Writer;
 use std::cell::RefCell;
 use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::io::{BufWriter, Read, Write};
 use std::process::{Child, Command, Stdio};
 use std::str;
 
@@ -48,6 +48,107 @@ impl AxesVariant
 			Axes3DType(ref a) => Some(a.get_common_data()),
 			NewPage => None,
 		}
+	}
+}
+
+pub enum EvcxrMimeType
+{
+	PNG,
+	SVG,
+	HTML,
+}
+
+/// A wrapper for the figure containing some options for printing to evcxr rich output
+pub struct EvcxrFigure<'f>
+{
+	mime_type: EvcxrMimeType,
+	figure: &'f mut Figure,
+	width: u32,
+	height: u32,
+}
+
+impl<'f> EvcxrFigure<'f>
+{
+	pub fn evcxr_display(&mut self)
+	{
+		use EvcxrMimeType::*;
+
+		let old_terminal = self.figure.terminal.clone();
+		let old_output = self.figure.output_file.clone();
+
+		self.figure.terminal = match self.mime_type
+		{
+			PNG => format!("pngcairo size {},{}", self.width, self.height),
+			SVG => format!("svg size {},{}", self.width, self.height),
+			HTML => format!("canvas size {},{}", self.width, self.height),
+		};
+
+		//self.figure.output_file = "-".to_string();
+
+		println!(
+			"EVCXR_BEGIN_CONTENT {}",
+			match self.mime_type
+			{
+				PNG => /*"image/png"*/ unimplemented!(), // TODO: base64-encode the output
+				HTML => "text/html",
+				SVG => "image/svg+xml",
+			}
+		);
+
+		self.figure.show().expect("gnuplot failed").close();
+		println!("EVCXR_END_CONTENT");
+
+		//let gnuplot: RefCell<Option<Child>> = RefCell::new(None);
+		//self.figure.gnuplot.swap(&gnuplot);
+		//let mut gnuplot = gnuplot.into_inner().expect("No gnuplot process");
+		//
+		//{
+		//let stdin = gnuplot.stdin.as_mut().expect("No stdin!?");
+		//writeln!(stdin, "quit");
+		//}
+		//println!("Waiting...");
+		//let output = gnuplot.wait_with_output().unwrap().stdout;
+
+		// println!(
+		// 	"EVCXR_BEGIN_CONTENT {}\n{:?}EVCXR_END_CONTENT",
+		// 	match self.mime_type
+		// 	{
+		// 		PNG => "image/png",
+		// 		SVG => "image/svg+xml",
+		// 		HTML => "text/html",
+		// 	},
+		// 	output
+		// );
+
+		//let lock = std::io::stdout().lock();
+		// println!(
+		// 	"EVCXR_BEGIN_CONTENT {}",
+		// 	match self.mime_type
+		// 	{
+		// 		PNG => "image/png",
+		// 		SVG => "image/svg+xml",
+		// 		HTML => "text/html",
+		// 	}
+		// );
+		// self.figure.show().expect("gnuplot failed").close();
+		// println!("EVCXR_END_CONTENT");
+
+		self.figure.close();
+
+		self.figure.terminal = old_terminal;
+		//self.figure.output_file = old_output;
+	}
+}
+
+impl<'f> std::fmt::Debug for EvcxrFigure<'f>
+{
+	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result
+	{
+		write!(f, "figure.as_evcxr(...) is broken; you must use
+    let mut fig = fig.as_evxr(...);
+    fig
+instead.");
+		Ok(())
 	}
 }
 
@@ -343,6 +444,23 @@ impl Figure
 
 		Ok(())
 	}
+
+	/// Generate struct displayable by
+	/// [evcxr_jupyter](https://github.com/google/evcxr/blob/master/evcxr_jupyter/README.md)
+	pub fn as_evcxr(&mut self, mime_type: EvcxrMimeType, width_px: u32, height_px: u32) -> EvcxrFigure
+	{
+		EvcxrFigure {
+			mime_type,
+			width: width_px,
+			height: height_px,
+			figure: self,
+		}
+	}
+
+    /// Direct way to display through evcxr using default parameters
+    pub fn evcxr_display(&mut self) {
+        self.as_evcxr(EvcxrMimeType::SVG, 800, 400).evcxr_display();
+    }
 
 	/// Closes the gnuplot process.
 	///
