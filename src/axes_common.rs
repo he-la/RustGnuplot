@@ -1624,6 +1624,16 @@ pub trait AxesCommon: AxesCommonPrivate
 		self
 	}
 
+	/// Sets the Y2 axis be logarithmic. Note that the range must be non-negative for this to be valid.
+	///
+	/// # Arguments
+	/// * `base` - If Some, then specifies base of the logarithm, if None makes the axis not be logarithmic
+	fn set_y2_log<'l>(&'l mut self, base: Option<f64>) -> &'l mut Self
+	{
+		self.get_common_data_mut().y2_axis.set_log(base);
+		self
+	}
+
 	/// Sets the color bar axis be logarithmic. Note that the range must be non-negative for this to be valid.
 	///
 	/// # Arguments
